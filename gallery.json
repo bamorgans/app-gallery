@@ -1,0 +1,15 @@
+{
+  "fretwork": {
+    "tags": ["music", "guitar"]
+  },
+  "ronans-playbook": {
+    "description": "Call a play, run a route, learn the rules, then test yourself like a ref.",
+    "accent": "#1f6f3f",
+    "tags": ["football", "kids"]
+  },
+  "sideline": {
+    "description": "Fantasy football command center: leagues, rankings, news and draft help.",
+    "accent": "#b4532a",
+    "tags": ["football", "fantasy"]
+  }
+}

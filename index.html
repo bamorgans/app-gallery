@@ -1,0 +1,185 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>App Gallery</title>
+<meta name="description" content="A launcher for my single-page apps.">
+<style>
+  :root {
+    --bg: #f6f5f2;
+    --surface: #ffffff;
+    --text: #1c1c1a;
+    --muted: #6b6a66;
+    --border: #e3e1dc;
+    --focus: #2b6cb0;
+    --shadow: 0 1px 2px rgb(0 0 0 / .05), 0 4px 14px rgb(0 0 0 / .06);
+  }
+  @media (prefers-color-scheme: dark) {
+    :root {
+      --bg: #121312;
+      --surface: #1c1d1c;
+      --text: #ecebe7;
+      --muted: #9b9a95;
+      --border: #2d2e2c;
+      --focus: #7fb0ff;
+      --shadow: 0 1px 2px rgb(0 0 0 / .4);
+    }
+  }
+  * { box-sizing: border-box; }
+  body {
+    margin: 0;
+    background: var(--bg);
+    color: var(--text);
+    font: 16px/1.5 system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+  }
+  .wrap { max-width: 1040px; margin: 0 auto; padding: 48px 16px 64px; }
+  header { display: flex; flex-wrap: wrap; gap: 16px; align-items: end; justify-content: space-between; margin-bottom: 28px; }
+  h1 { margin: 0; font-size: 28px; letter-spacing: -.01em; }
+  header p { margin: 4px 0 0; color: var(--muted); }
+  input[type=search] {
+    width: min(280px, 100%);
+    padding: 9px 12px;
+    font: inherit;
+    color: var(--text);
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+  }
+  input[type=search]:focus { outline: 2px solid var(--focus); outline-offset: 1px; }
+
+  .grid { display: grid; gap: 16px; grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); list-style: none; margin: 0; padding: 0; }
+  .card {
+    position: relative;
+    display: flex; flex-direction: column; gap: 12px;
+    padding: 18px;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-top: 3px solid var(--accent, var(--border));
+    border-radius: 12px;
+    box-shadow: var(--shadow);
+    transition: transform .15s ease, box-shadow .15s ease;
+  }
+  .card:hover { transform: translateY(-2px); }
+  .card:focus-within { outline: 2px solid var(--focus); outline-offset: 2px; }
+  .head { display: flex; align-items: center; gap: 12px; }
+  .icon {
+    flex: none; width: 48px; height: 48px; border-radius: 11px;
+    display: grid; place-items: center;
+    background: var(--accent, #555); color: #fff; font-weight: 700; font-size: 20px;
+    object-fit: cover;
+  }
+  .card h2 { margin: 0; font-size: 18px; }
+  /* The title link covers the whole card so any click launches the app;
+     the source link sits above it via z-index. */
+  .card h2 a { color: inherit; text-decoration: none; }
+  .card h2 a::after { content: ""; position: absolute; inset: 0; border-radius: 12px; }
+  .card h2 a:focus { outline: none; }
+  .lock { margin-left: auto; font-size: 14px; }
+  .desc { margin: 0; color: var(--muted); font-size: 14px; flex: 1; }
+  .foot { display: flex; align-items: center; justify-content: space-between; gap: 8px; }
+  .tags { display: flex; flex-wrap: wrap; gap: 6px; }
+  .tag { font-size: 12px; padding: 2px 8px; border-radius: 999px; border: 1px solid var(--border); color: var(--muted); }
+  .links { position: relative; z-index: 1; display: flex; gap: 12px; flex: none; }
+  .links a { font-size: 13px; color: var(--muted); }
+  .links a:hover { color: var(--text); }
+  .empty { color: var(--muted); padding: 32px 0; }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <div>
+      <h1>App Gallery</h1>
+      <p>Single-page apps, all in one place.</p>
+    </div>
+    <input type="search" id="q" placeholder="Filter apps…" aria-label="Filter apps">
+  </header>
+  <ul class="grid" id="grid"></ul>
+  <p class="empty" id="empty" hidden>No apps match.</p>
+</div>
+
+<script src="apps.js"></script>
+<script>
+  const grid = document.getElementById("grid");
+  const empty = document.getElementById("empty");
+  const q = document.getElementById("q");
+  const apps = (window.APPS || []).slice().sort((a, b) => a.name.localeCompare(b.name));
+
+  function el(tag, props = {}, ...children) {
+    const node = Object.assign(document.createElement(tag), props);
+    node.append(...children);
+    return node;
+  }
+
+  function card(app) {
+    const icon = app.icon
+      ? el("img", { className: "icon", src: app.icon, alt: "", loading: "lazy" })
+      : el("div", { className: "icon", ariaHidden: "true" }, app.name[0]);
+    const li = el("li", { className: "card" },
+      el("div", { className: "head" }, icon,
+        el("h2", {}, el("a", { href: app.url }, app.name)),
+        app.locked ? el("span", { className: "lock", title: "Password protected" }, "🔒") : ""),
+      el("p", { className: "desc" }, app.description || ""),
+      el("div", { className: "foot" },
+        el("div", { className: "tags" }, ...(app.tags || []).map(t => el("span", { className: "tag" }, t))),
+        el("div", { className: "links" },
+          downloadLink(app),
+          app.source ? el("a", { href: app.source, target: "_blank", rel: "noopener" }, "Source") : ""
+        )
+      )
+    );
+    if (app.accent) li.style.setProperty("--accent", app.accent);
+    li.dataset.search = [app.name, app.description, ...(app.tags || [])].join(" ").toLowerCase();
+    return li;
+  }
+
+  function fileUrl(app) {
+    if (app.file !== undefined) return app.file;
+    return app.url.endsWith("/") ? app.url + "index.html" : app.url;
+  }
+
+  // The download attribute is ignored for cross-origin links and for pages
+  // opened from disk, which would just navigate to the app. Fetching the file
+  // and saving it as a blob gives a real download with a readable filename.
+  // If the fetch fails, fall back to opening the file so it can be saved
+  // by hand.
+  function downloadLink(app) {
+    const href = fileUrl(app);
+    if (!href) return "";
+    const filename = app.name.toLowerCase().replace(/['’]/g, "").replace(/[^a-z0-9]+/g, "-").replace(/^-|-$/g, "") + ".html";
+    const a = el("a", { href, download: filename, title: "Save a copy that runs offline" }, "Download");
+    a.addEventListener("click", async (e) => {
+      e.preventDefault();
+      try {
+        const res = await fetch(href);
+        if (!res.ok) throw new Error(res.status);
+        const blobUrl = URL.createObjectURL(await res.blob());
+        const tmp = el("a", { href: blobUrl, download: filename });
+        tmp.click();
+        setTimeout(() => URL.revokeObjectURL(blobUrl), 1000);
+      } catch {
+        window.open(href, "_blank", "noopener");
+      }
+    });
+    return a;
+  }
+
+  const cards = apps.map(card);
+  grid.append(...cards);
+
+  function filter() {
+    const term = q.value.trim().toLowerCase();
+    let shown = 0;
+    for (const c of cards) {
+      const match = !term || c.dataset.search.includes(term);
+      c.hidden = !match;
+      if (match) shown++;
+    }
+    empty.hidden = shown > 0;
+  }
+  q.addEventListener("input", filter);
+  filter();
+</script>
+</body>
+</html>
