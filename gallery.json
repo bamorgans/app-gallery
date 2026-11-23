@@ -22,7 +22,7 @@
     ]
   },
   "daily-fit": {
-    "description": "Daily workouts with a rest timer, cardio, body measurements, and a food log with macro targets and barcode scanning.",
+    "description": "Daily workouts with rest timer, cardio, body measurements, and a food log with macro targets and barcode scanning.",
     "accent": "#b23a6f",
     "tags": [
       "fitness",
