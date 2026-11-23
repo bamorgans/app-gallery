@@ -27,6 +27,14 @@ trap 'rm -rf "$tmp"' EXIT
 cp "$src" "$tmp/index.html"
 mkdir -p "apps/$name"
 
+# Home-screen icon. Without one, iOS uses bamorgans.github.io's profile photo.
+# The link goes into both the plain app (the head an unlocked page ends up
+# with) and the password page. It's a relative file, so a downloaded copy just
+# goes without it.
+icon_link='<link rel="apple-touch-icon" href="icon-180.png">'
+add_icon() { [[ -f "apps/$name/icon-180.png" ]] && ! grep -q 'rel="apple-touch-icon"' "$1" && perl -0pi -e "s{</head>}{$icon_link\n</head>}i" "$1"; return 0; }
+add_icon "$tmp/index.html"
+
 # The password page's <title> is the only readable text in the encrypted file,
 # and the gallery takes the card name from it, so reuse the app's own title.
 title="$(grep -o -i -m1 '<title[^>]*>[^<]*' "$src" | sed 's/<[^>]*>//' || true)"
@@ -44,4 +52,5 @@ npx --yes staticrypt@3.5.4 "$tmp/index.html" \
 # StatiCrypt can exit 0 without writing anything (e.g. when its short-password
 # prompt is declined), so check for the output rather than trusting the status.
 [[ -f "apps/$name/index.html" ]] || { echo "Encryption failed: apps/$name/index.html was not written." >&2; exit 1; }
+add_icon "apps/$name/index.html"
 echo "Encrypted → apps/$name/index.html"
