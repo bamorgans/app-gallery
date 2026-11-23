@@ -61,6 +61,17 @@ when you change it, or installed copies keep serving the old version.
 
 ## Password-protecting an app
 
+Protected apps are kept unencrypted in the private repo
+[`bamorgans/app-gallery-private`](https://github.com/bamorgans/app-gallery-private),
+which this account alone can see. Pushing there encrypts the changed apps and
+publishes them here automatically, so they can be edited from a phone,
+including by Claude Code on the web. Its README covers adding an app and
+changing passwords. The gallery's **Admin** page (footer link) opens every
+protected app with one master password.
+
+On this Mac, `private/` is a clone of that repo, and `protect.sh` still works
+for local testing:
+
 GitHub Pages can't restrict who sees a page, so protected apps are encrypted
 instead (StatiCrypt, AES-256). Only the encrypted file is published. Visitors
 get a password box, and a downloaded copy stays encrypted but still works
@@ -73,10 +84,7 @@ cp ~/Desktop/some-app.html private/some-app.html
 
 - `private/` is git-ignored. Never put the unencrypted file in `apps/`, even
   briefly: once it's pushed, it stays readable in the public history.
-- From a phone, encrypt the file on StatiCrypt's web page
-  (<https://robinmoisson.github.io/staticrypt/>) and upload the result into
-  `apps/`. Add the app's name and description to
-  `gallery.json`, since the encrypted file doesn't expose them.
+- From a phone, add or edit the app in the private repo instead (see above).
 - One password per app. Anyone with it can get in, and revoking a person
   means changing the password and telling everyone else.
 - Use a long passphrase. The encrypted file is public, so a short password

@@ -23,9 +23,11 @@ you finish.
 
 - Never commit secrets, API keys or personal data. The repo is public.
 - Never put an unencrypted copy of a password-protected app in `apps/`. Those
-  originals live in the git-ignored `private/` folder and are published only
-  through `./protect.sh <name>`. Sideline is protected: don't edit
-  `apps/sideline/index.html` directly, since it's encrypted output.
+  originals live in the private repo `bamorgans/app-gallery-private`, whose
+  workflow encrypts and publishes them here. Protected apps (Sideline, Daily
+  Fit, and any whose `apps/<name>/index.html` is a StatiCrypt page) and
+  `admin/` are encrypted output: don't edit them here. To change one, work in
+  the private repo.
 - Don't break apps you weren't asked to change. If you change one that has a
   service worker (Fretwork), bump `VERSION` in its `sw.js`.
 
