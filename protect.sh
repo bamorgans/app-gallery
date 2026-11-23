@@ -33,18 +33,33 @@ mkdir -p "$out"
 # Removed first so the check below can't be fooled by the previous version.
 rm -f "$out/index.html"
 
-# Home-screen icon. Without one, iOS uses bamorgans.github.io's profile photo.
-# The link goes into both the plain app (the head an unlocked page ends up
-# with) and the password page. It's a relative file, so a downloaded copy just
-# goes without it.
-icon_link='<link rel="apple-touch-icon" href="icon-180.png">'
-add_icon() { [[ -f "$out/icon-180.png" ]] && ! grep -q 'rel="apple-touch-icon"' "$1" && perl -0pi -e "s{</head>}{$icon_link\n</head>}i" "$1"; return 0; }
-add_icon "$tmp/index.html"
-
 # The password page's <title> is the only readable text in the encrypted file,
 # and the gallery takes the card name from it, so reuse the app's own title.
 title="$(grep -o -i -m1 '<title[^>]*>[^<]*' "$src" | sed 's/<[^>]*>//' || true)"
 title="${title:-$name}"
+# The part before the tagline, as the gallery card does it ("Sideline").
+short="$(printf '%s' "$title" | perl -pe 's/\s*(?::|—|–|\s-\s|\|).*//; s/"/&quot;/g')"
+
+# Home-screen tags, so the app can be added to an iPhone's home screen and
+# open full-screen under its short name. They go into both the plain app (the
+# head an unlocked page ends up with) and the password page, since either may
+# be on screen when "Add to Home Screen" is tapped. Each is skipped if the app
+# already has it.
+#  - Icon: without one, iOS uses bamorgans.github.io's profile photo. It's a
+#    relative file, so a downloaded copy just goes without it.
+#  - Title: without it, iOS offers the whole <title>, tagline included.
+#  - Capable: opens without Safari's toolbars on iOS versions that don't
+#    already do so for every home-screen site.
+add_home_tags() {
+  local tags=""
+  [[ -f "$out/icon-180.png" ]] && ! grep -q 'rel="apple-touch-icon"' "$1" && tags+='<link rel="apple-touch-icon" href="icon-180.png">'$'\n'
+  grep -q 'name="apple-mobile-web-app-title"' "$1" || tags+="<meta name=\"apple-mobile-web-app-title\" content=\"$short\">"$'\n'
+  grep -q 'name="apple-mobile-web-app-capable"' "$1" || tags+='<meta name="apple-mobile-web-app-capable" content="yes">'$'\n'
+  # Passed through the environment so nothing in the title is read as Perl.
+  [[ -n "$tags" ]] && TAGS="$tags" perl -0pi -e 's{</head>}{$ENV{TAGS}</head>}i' "$1"
+  return 0
+}
+add_home_tags "$tmp/index.html"
 
 npx --yes staticrypt@3.5.4 "$tmp/index.html" \
   -d "$out" \
@@ -66,5 +81,5 @@ npx --yes staticrypt@3.5.4 "$tmp/index.html" \
 perl -pi -e "s/rememberExpirationKey: \"staticrypt_expiration\"/rememberExpirationKey: \"$name:staticrypt_expiration\"/; s/rememberPassphraseKey: \"staticrypt_passphrase\"/rememberPassphraseKey: \"$name:staticrypt_passphrase\"/" "$out/index.html"
 grep -q "\"$name:staticrypt_passphrase\"" "$out/index.html" || { echo "Couldn't set the Remember-me key; StatiCrypt's template may have changed." >&2; exit 1; }
 
-add_icon "$out/index.html"
+add_home_tags "$out/index.html"
 echo "Encrypted → $out/index.html"

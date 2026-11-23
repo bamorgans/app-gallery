@@ -95,7 +95,10 @@ cp ~/Desktop/some-app.html private/some-app.html
 ## Offline use and storage
 
 Each card has a Download button that saves the app as one HTML file, which
-runs from disk with no network. Apps must therefore stay self-contained:
+runs from disk with no network. On an iPhone or iPad, where a downloaded HTML
+file won't run, the button is **Install** instead: it explains adding the app
+to the home screen from Safari. A home-screen app keeps its own storage,
+separate from Safari's. Apps must therefore stay self-contained:
 inline CSS and JS, with no files loaded relative to the page.
 
 Saved data lives in the browser, and different copies of an app don't see

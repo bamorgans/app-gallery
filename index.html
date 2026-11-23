@@ -90,7 +90,32 @@
   .tag { font-size: 12px; padding: 2px 8px; border-radius: 999px; border: 1px solid var(--border); color: var(--muted); }
   .links { position: relative; z-index: 1; display: flex; gap: 12px; flex: none; }
   .links a { font-size: 13px; color: var(--muted); }
-  .links a:hover { color: var(--text); }
+  .links a:hover, .links button:hover { color: var(--text); }
+  .links button { font: inherit; font-size: 13px; color: var(--muted); background: none; border: 0; padding: 0; text-decoration: underline; cursor: pointer; }
+
+  dialog {
+    width: min(400px, calc(100% - 32px));
+    padding: 20px;
+    color: var(--text);
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 14px;
+    box-shadow: var(--shadow);
+  }
+  dialog::backdrop { background: rgb(0 0 0 / .45); }
+  dialog .head h2 { margin: 0; font-size: 18px; }
+  dialog ol { margin: 16px 0; padding-left: 22px; }
+  dialog li { margin: 6px 0; }
+  dialog p { margin: 12px 0; font-size: 14px; color: var(--muted); }
+  .share { display: inline-block; width: 15px; height: 18px; vertical-align: -3px; }
+  .actions { display: flex; gap: 10px; justify-content: flex-end; flex-wrap: wrap; }
+  .btn {
+    min-height: 44px; padding: 10px 16px;
+    font: inherit; font-weight: 600; text-decoration: none; text-align: center;
+    border-radius: 10px; border: 1px solid var(--border);
+    background: var(--surface); color: var(--text); cursor: pointer;
+  }
+  .btn.primary { background: var(--focus); border-color: var(--focus); color: #fff; }
   .empty { color: var(--muted); padding: 32px 0; }
   footer { margin-top: 40px; font-size: 13px; color: var(--muted); }
   footer a { color: inherit; }
@@ -109,6 +134,15 @@
   <p class="empty" id="empty" hidden>No apps match.</p>
   <footer><a href="admin/">Admin</a></footer>
 </div>
+
+<dialog id="install" aria-labelledby="install-title">
+  <div class="head"><img class="icon" id="install-icon" alt=""><h2 id="install-title"></h2></div>
+  <div id="install-body"></div>
+  <div class="actions">
+    <button class="btn" id="install-close" type="button">Close</button>
+    <a class="btn primary" id="install-go"></a>
+  </div>
+</dialog>
 
 <script src="apps.js"></script>
 <script>
@@ -135,7 +169,7 @@
       el("div", { className: "foot" },
         el("div", { className: "tags" }, ...(app.tags || []).map(t => el("span", { className: "tag" }, t))),
         el("div", { className: "links" },
-          downloadLink(app),
+          IOS ? installButton(app) : downloadLink(app),
           app.source ? el("a", { href: app.source, target: "_blank", rel: "noopener" }, "Source") : ""
         )
       )
@@ -174,6 +208,58 @@
       }
     });
     return a;
+  }
+
+  // iPhones and iPads can't run a downloaded HTML file (Files only previews
+  // it), so there the Download link becomes an Install button that explains
+  // Add to Home Screen. iPadOS reports itself as a Mac; the touch points give
+  // it away.
+  const IOS = /iP(hone|ad|od)/.test(navigator.userAgent)
+    || (navigator.platform === "MacIntel" && navigator.maxTouchPoints > 1);
+  const dialog = document.getElementById("install");
+  document.getElementById("install-close").addEventListener("click", () => dialog.close());
+  dialog.addEventListener("click", (e) => { if (e.target === dialog) dialog.close(); });
+
+  const SHARE_ICON = '<svg class="share" viewBox="0 0 15 18" aria-label="Share" role="img" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M7.5 1v11M3.5 5l4-4 4 4M5 8H2.5v9h10V8H10"/></svg>';
+
+  function installButton(app) {
+    const b = el("button", { type: "button", title: "Add to your home screen" }, "Install");
+    b.addEventListener("click", () => showInstall(app));
+    return b;
+  }
+
+  // Add to Home Screen has to be done from the app's own page, or it adds the
+  // gallery instead. In the home-screen copy of the gallery (standalone) there
+  // is no Share button at all, so the app has to be opened in Safari.
+  function showInstall(app) {
+    const icon = document.getElementById("install-icon");
+    icon.hidden = !app.icon;
+    if (app.icon) icon.src = app.icon;
+    document.getElementById("install-title").textContent = "Install " + app.name;
+    const body = document.getElementById("install-body");
+    const go = document.getElementById("install-go");
+    const appUrl = new URL(app.url, location.href).href;
+    const lockNote = app.locked
+      ? "<p>The home-screen copy keeps its own storage, so it asks for the password once more the first time it opens.</p>" : "";
+    go.onclick = null;
+    if (navigator.standalone) {
+      body.innerHTML = "<ol><li>Tap <b>Copy link</b>.</li><li>Open Safari and paste it into the address bar.</li>"
+        + "<li>In Safari, tap " + SHARE_ICON + " <b>Share</b>, then <b>Add to Home Screen</b>.</li></ol>"
+        + "<p>Apps can't be added from the home-screen gallery, only from Safari.</p>" + lockNote;
+      go.removeAttribute("href");
+      go.textContent = "Copy link";
+      go.onclick = async () => {
+        try { await navigator.clipboard.writeText(appUrl); go.textContent = "Copied"; }
+        catch { body.insertAdjacentHTML("beforeend", "<p>Copy this link by hand: <b></b></p>"); body.lastElementChild.querySelector("b").textContent = appUrl; }
+      };
+    } else {
+      body.innerHTML = "<ol><li>Tap <b>Open " + app.name.replace(/[&<>]/g, "") + "</b>.</li>"
+        + "<li>Tap " + SHARE_ICON + " <b>Share</b> in Safari's toolbar (on iOS 26, it's under the <b>⋯</b> button).</li>"
+        + "<li>Choose <b>Add to Home Screen</b>, then <b>Add</b>.</li></ol>" + lockNote;
+      go.href = app.url;
+      go.textContent = "Open " + app.name;
+    }
+    dialog.showModal();
   }
 
   const cards = apps.map(card);

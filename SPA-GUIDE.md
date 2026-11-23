@@ -73,6 +73,15 @@ SVG touch icons, so it has to be a PNG. A folder app may use
 `<link rel="apple-touch-icon" href="icon-180.png">` instead; the gallery card
 also picks up an `icon-192.png` from the folder.
 
+For a clean install from the gallery's **Install** button (Safari → Share →
+Add to Home Screen), also give the home-screen name and full-screen launch.
+Without the title, iOS offers the whole `<title>`, tagline included:
+
+```html
+<meta name="apple-mobile-web-app-title" content="AppName">
+<meta name="apple-mobile-web-app-capable" content="yes">
+```
+
 File placement:
 
 - `apps/<id>.html` for a single file. This is what a phone upload produces.
