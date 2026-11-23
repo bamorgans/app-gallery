@@ -150,7 +150,7 @@ lines. Ronan's Playbook's `TIMING`/`LEAGUE` blocks are the model.
 const CONFIG = Object.freeze({
   APP_ID: 'fretwork',            // storage-key prefix, export filename, cache names
   APP_NAME: 'Fretwork',
-  APP_VERSION: '1.4.0',          // shown in Settings; bump on every release
+  APP_VERSION: 'V00.01.001',     // Vmajor.minor.dev-release (§3.2.1); shown in Settings
   SCHEMA: 2,                     // version of the saved-data shape; bump + add a migration (§6.3)
 
   STORAGE: {
@@ -186,6 +186,33 @@ source of truth, as Ronan's Playbook does for its SVG field:
 const css = getComputedStyle(document.documentElement);
 const token = (name, fallback) => css.getPropertyValue('--' + name).trim() || fallback;
 ```
+
+#### 3.2.1 App version numbers
+
+**MUST**: `APP_VERSION` uses the format `Vmm.nn.ddd`: a capital `V`, then
+major, minor and dev-release, zero-padded to 2, 2 and 3 digits.
+
+| Field | Digits | Bump when | Example |
+|---|---|---|---|
+| major | 2 | the owner decides it's a new generation of the app, or saved data/backups stop being compatible | `V01.00.001` |
+| minor | 2 | the owner calls a set of changes a release | `V00.02.001` |
+| dev-release | 3 | **every** published change, however small | `V00.01.002` |
+
+- A new app starts at `V00.01.001`.
+- Every change that reaches the gallery bumps at least the dev-release. Never
+  publish two different files with the same version.
+- Bumping a field resets the fields to its right: minor resets dev-release to
+  `001`, and major resets minor to `00` and dev-release to `001`.
+- Agents bump dev-release on their own. Minor and major change only when the
+  owner asks.
+- Zero-padding makes the strings sort correctly as plain text, so
+  `a.localeCompare(b)` orders versions without parsing them. Check the format
+  with `/^V\d{2}\.\d{2}\.\d{3}$/`.
+- `APP_VERSION` is not `SCHEMA`. The version changes with every release, but
+  `SCHEMA` changes only when the saved-data shape does (§6.3).
+- The same string appears in Settings, in every export's `appVersion` (§7.1),
+  and in a service worker's cache name (§9). For a protected app, it also goes
+  in the commit message that publishes it.
 
 ### 3.3 Content as data
 
@@ -564,7 +591,7 @@ showing the buttons.
 {
   "app": "fretwork",
   "schema": 2,
-  "appVersion": "1.4.0",
+  "appVersion": "V00.01.001",
   "exported": "2026-11-22T18:04:00.000Z",
   "data": { "items": [], "prefs": {} }
 }
@@ -846,6 +873,7 @@ Before calling an app done, verify each point:
 - [ ] One HTML file; opens from `file://` with Wi-Fi off and core features work
 - [ ] `<title>`, `description`, `theme-color`, `gallery-tags` set (§2)
 - [ ] `CONFIG` block at the top; no storage keys, URLs or timings inline elsewhere
+- [ ] `APP_VERSION` is `Vmm.nn.ddd` and was bumped for this release (§3.2.1)
 - [ ] Every storage key and cache name starts with `APP_ID`; no `localStorage.clear()`
 - [ ] All storage goes through the store module; the store API is async
 - [ ] Saved data has `schema`; migrations run on load; corrupt data is kept aside, not overwritten
