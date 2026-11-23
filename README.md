@@ -6,7 +6,10 @@ A launcher for my single-page apps, served by GitHub Pages at
 
 Building a new app? Point your AI agent at [`SPA-GUIDE.md`](SPA-GUIDE.md): the
 rules every app here follows (single file, config block, components, data
-layer, export/import, touch/TV input, offline).
+layer, export/import, touch/TV input, offline). Agents working in this repo
+pick it up automatically through `AGENTS.md` (and `CLAUDE.md`, which imports
+it). From a phone, give a chat-based AI the raw link:
+<https://raw.githubusercontent.com/bamorgans/app-gallery/main/SPA-GUIDE.md>.
 
 ## Running it
 

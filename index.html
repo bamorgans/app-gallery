@@ -5,6 +5,14 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>App Gallery</title>
 <meta name="description" content="A launcher for my single-page apps.">
+<!-- Without its own icons, iOS falls back to bamorgans.github.io/apple-touch-icon.png,
+     the account site's icon, for the home-screen shortcut. -->
+<link rel="icon" href="icons/icon.svg" type="image/svg+xml">
+<link rel="apple-touch-icon" href="icons/icon-180.png">
+<link rel="manifest" href="manifest.webmanifest">
+<meta name="apple-mobile-web-app-title" content="Apps">
+<meta name="theme-color" content="#f6f5f2" media="(prefers-color-scheme: light)">
+<meta name="theme-color" content="#121312" media="(prefers-color-scheme: dark)">
 <style>
   :root {
     --bg: #f6f5f2;

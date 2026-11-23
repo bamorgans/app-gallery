@@ -60,6 +60,19 @@ The gallery builds each card from the app's own `<head>`. **MUST** include:
 <meta name="gallery-tags" content="music, guitar">
 ```
 
+**SHOULD** also give the app its own home-screen icon. Without one, an iPhone
+falls back to `bamorgans.github.io/apple-touch-icon.png`, which is the account
+site's profile photo:
+
+```html
+<link rel="apple-touch-icon" href="data:image/png;base64,…">  <!-- 180×180 PNG -->
+```
+
+Inline it as a data URL so the single file keeps working offline. iOS ignores
+SVG touch icons, so it has to be a PNG. A folder app may use
+`<link rel="apple-touch-icon" href="icon-180.png">` instead; the gallery card
+also picks up an `icon-192.png` from the folder.
+
 File placement:
 
 - `apps/<id>.html` for a single file. This is what a phone upload produces.
