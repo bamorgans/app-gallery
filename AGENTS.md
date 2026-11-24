@@ -37,7 +37,23 @@ you finish.
 <http://localhost:8000>. The new card should appear, launch the app, and the
 Download link should produce a file that runs on its own.
 
-## Commits
+## Commits and pull requests
 
-Write commit messages about the change: what and why. No AI attribution
-trailers (`Co-Authored-By`, session links) and no "generated with" footers.
+Don't reference AI agents anywhere in the repo's history: no AI attribution
+trailers (`Co-Authored-By`, session links), no "generated with" footers, and
+no agent or tool names in branch names (`add-ride-scan`, not
+`claude/add-ride-scan`). Some tools append a footer to PR descriptions on
+their own, so re-read the PR after creating it and remove any footer added.
+
+Commit messages say what changed and why, briefly.
+
+PR descriptions are concise and use these headings:
+
+- **What**: one line on what the PR does.
+- **Changes**: the files or areas changed, one bullet each.
+- **Why**: the reason for the change.
+- **Testing**: how it was checked, and anything not yet checked.
+- **Acceptance criteria**: a checklist the reviewer can verify.
+
+Every app change bumps `APP_VERSION` (SPA-GUIDE §3.2.1); put the new version
+in the PR title.
