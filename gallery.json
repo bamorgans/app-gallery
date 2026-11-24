@@ -28,5 +28,14 @@
       "fitness",
       "nutrition"
     ]
+  },
+  "ride-scan": {
+    "description": "Big-button scanner for riders: voice and handlebar-remote control, plus red arrows pointing at marked spots.",
+    "accent": "#1d4ed8",
+    "tags": [
+      "radio",
+      "scanner",
+      "riding"
+    ]
   }
 }
