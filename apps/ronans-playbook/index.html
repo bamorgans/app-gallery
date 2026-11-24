@@ -193,7 +193,6 @@ main{max-width:1440px;margin:0 auto;display:grid;gap:var(--s3);
 .coach-line{display:grid;grid-template-columns:auto 1fr;gap:var(--s2);align-items:center;font-size:var(--fs-step);font-weight:850;line-height:1.25}
 .coach .num{width:1.6em;height:1.6em;border-radius:8px;font-size:.85em;background:var(--sun);color:var(--dark)}
 @keyframes stepPop{0%{opacity:0;transform:scale(.94)}60%{opacity:1;transform:scale(1.03)}100%{opacity:1;transform:scale(1)}}
-@media(orientation:landscape) and (max-height:500px){.player.is-full .step-hud{width:min(44%,400px)}.coach{padding:7px var(--s3) 7px var(--s2);gap:5px}}
 @media(orientation:portrait){.player.is-full .step-hud{width:auto;max-width:none}
   .player.is-full .step-hud.pos-tl,.player.is-full .step-hud.pos-bl{right:var(--pad-r)}}
 /* Narration moves to the top edge when the coach card takes a bottom corner. */
@@ -201,13 +200,6 @@ main{max-width:1440px;margin:0 auto;display:grid;gap:var(--s3);
 @media(orientation:landscape){
   .player.is-full .hud-bottom{grid-template-columns:minmax(0,1fr) auto;grid-template-areas:"spots controls" "cards cards"}
   .player.is-full .spots{margin-right:0;padding-right:0}
-}
-@media(orientation:landscape) and (max-height:500px){
-  .player.is-full .hud-top{padding-bottom:22px}
-  .player.is-full .hud-title{font-size:1rem}
-  .player.is-full .hud-desc{font-size:var(--fs-sm);margin-top:3px}
-  .player.is-full .hud-bottom{padding-top:22px}
-  .player.is-full .tile{min-height:50px}
 }
 
 /* ===== 6. Lesson panel ===== */
@@ -259,6 +251,48 @@ main{max-width:1440px;margin:0 auto;display:grid;gap:var(--s3);
 .splash-copy{max-width:420px;margin:var(--s4) auto 22px;color:#e2e5e8;font-size:1rem;line-height:1.55}
 .splash .btn--gold{width:min(100%,320px);min-height:56px;font-size:1.1rem;font-weight:950;border-radius:var(--r-md);box-shadow:0 7px 0 var(--gold-dark)}
 .splash .btn--gold:active{transform:translateY(4px);box-shadow:0 3px 0 var(--gold-dark)}
+/* ===== 8. Short landscape (phone on its side, e.g. mirrored to a TV: ~343-393px tall) =====
+   Every screen must fit without page scrolling except the lesson text below the player.
+   Splash: one-line title and tighter spacing so Let's Play stays on screen.
+   Page view: compact top bar; the player puts the field on the left and its title,
+   pickers and controls in a column on the right, so the whole player fits under the bar.
+   Full screen: tighter HUD scrims, and the pickers stop at the safe zone instead of
+   scrolling under the camera housing. */
+@media(orientation:landscape) and (max-height:500px){
+  .splash-card{padding:18px clamp(18px,4vw,40px) 22px}
+  .splash-ball{font-size:2rem;margin:0 0 2px}
+  .splash h1{font-size:clamp(2.2rem,7vw,3.2rem);line-height:1.05}
+  .splash h1 span{display:inline}
+  .splash-copy{margin:var(--s2) auto var(--s4);line-height:1.4}
+
+  .topbar{padding-top:calc(var(--inset-t) + var(--s1));padding-bottom:var(--s1)}
+  .tabs{padding:2px}
+  .tabs .btn{min-height:40px;padding:var(--s1) var(--s3)}
+  main{padding-top:var(--s2);gap:var(--s2)}
+
+  .player:not(.is-full) .stage{display:grid;column-gap:var(--s2);
+    grid-template-columns:minmax(0,1.35fr) minmax(250px,1fr);grid-template-rows:auto auto auto 1fr;
+    grid-template-areas:"field top" "field spots" "field cards" "field controls"}
+  .player:not(.is-full) .hud-bottom{display:contents}
+  .player:not(.is-full) .field-wrap{grid-area:field;align-self:center}
+  .player:not(.is-full) .field{max-height:none}
+  .player:not(.is-full) .hud-top{grid-area:top;padding:var(--s2) var(--pad-r) var(--s1) 0}
+  .player:not(.is-full) .hud-title{font-size:1rem}
+  .player:not(.is-full) .hud-desc{font-size:var(--fs-sm);margin-top:2px}
+  .player:not(.is-full) .spots,.player:not(.is-full) .cards{--pad-l:0px;margin-bottom:var(--s1)}
+  .player:not(.is-full) .tile{min-height:48px}
+  .player:not(.is-full) .controls{align-self:end;padding:0 var(--pad-r) var(--s2) 0}
+  .player:not(.is-full) .controls .btn{flex-direction:column;gap:2px;font-size:.72rem;padding:4px 2px}
+
+  .player.is-full .hud-top{padding-bottom:22px}
+  .player.is-full .hud-title{font-size:1rem}
+  .player.is-full .hud-desc{font-size:var(--fs-sm);margin-top:3px}
+  .player.is-full .hud-bottom{padding-top:22px}
+  .player.is-full .tile{min-height:50px}
+  .player.is-full .rail{--pad-l:0px;--pad-r:0px}
+  .player.is-full .step-hud{width:min(44%,400px)}
+  .coach{padding:7px var(--s3) 7px var(--s2);gap:5px}
+}
 </style>
 <link rel="apple-touch-icon" href="icon-180.png">
 </head>

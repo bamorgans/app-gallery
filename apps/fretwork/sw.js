@@ -1,5 +1,5 @@
 /* Fretwork offline cache. Bump VERSION when you upload a new index.html. */
-const VERSION = 'fretwork-v6';
+const VERSION = 'fretwork-v7';
 const SHELL = ['./', './index.html', './manifest.webmanifest', './icon-180.png', './icon-192.png', './icon-512.png'];
 
 self.addEventListener('install', e => {
