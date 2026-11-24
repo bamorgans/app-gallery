@@ -74,6 +74,8 @@ p{margin:0 0 10px;max-width:65ch}
 .btn.on{background:var(--brass);color:var(--brass-ink)}
 .btn:active{transform:scale(.97)}
 .btns{display:flex;flex-wrap:wrap;gap:8px;margin-top:12px}
+.btns.center{justify-content:center}
+.seg-row{display:flex;justify-content:center;margin-top:12px}
 .icon-btn{width:44px;height:44px;border-radius:50%;border:1px solid var(--line);background:var(--surface);display:grid;place-items:center;font-size:20px}
 
 /* Chord stage */
@@ -333,6 +335,129 @@ a.chip{text-decoration:none;color:inherit;display:inline-flex;align-items:center
 @media (min-width:640px){
   .chord-name{font-size:68px}
   .beat .arr{font-size:36px}
+}
+/* Short landscape: a phone on its side (often mirrored to a TV) is 340-393px tall.
+   The tab bar moves up into the header row, the page intro moves below the main
+   panel, and each screen's main panel is laid out side by side so its diagram and
+   play buttons fit without scrolling. Portrait and larger screens are unaffected. */
+@media (orientation:landscape) and (max-height:500px){
+  html{scroll-padding-top:60px}
+  .top-in{max-width:none;height:52px;padding:4px calc(env(safe-area-inset-right,0px) + 16px) 4px calc(env(safe-area-inset-left,0px) + 16px)}
+  .brand{font-size:0;gap:0}
+  .icon-btn{width:40px;height:40px}
+  .top .btn{min-height:40px;padding:8px 12px}
+  /* Fixed into the gap between the logo (26px) and the three header buttons (~180px) */
+  .tabs{top:0;bottom:auto;left:calc(env(safe-area-inset-left,0px) + 52px);right:calc(env(safe-area-inset-right,0px) + 196px);background:transparent;border-top:0;padding-bottom:0}
+  .tabs-in{max-width:none;height:52px}
+  .tabs button{justify-content:center;padding:4px 2px}
+  .tabs button svg{width:20px;height:20px}
+  .tabs button[aria-selected="true"]::before{top:auto;bottom:0;border-radius:3px 3px 0 0}
+  main{max-width:none;padding:8px calc(env(safe-area-inset-right,0px) + 16px) 12px calc(env(safe-area-inset-left,0px) + 16px)}
+  .toast{bottom:calc(16px + env(safe-area-inset-bottom,0px))}
+  .sheet{max-height:calc(100% - 8px)}
+
+  /* The selected tab already names the screen; keep the heading for screen readers only */
+  .view>h2{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap;margin:0}
+  .view{display:flex;flex-direction:column}
+  .view>.lead{order:1;font-size:14px;max-width:none;margin:4px 0 8px}
+  .view>.panel~*{order:2}
+  .panel{padding:10px 14px;margin:0 0 8px;border-radius:16px}
+  .row-scroll{padding-top:2px;padding-bottom:4px}
+  .btns{margin-top:8px}
+  .hint{margin:4px 0 0}
+
+  /* Strings: the six strings on the left, buttons beside them */
+  .view[aria-label="strings"]>.panel:not(.panel~.panel){display:grid;grid-template-columns:minmax(0,1fr) 240px;column-gap:16px;align-items:start;padding:4px 14px 4px 8px}
+  .view[aria-label="strings"] .strings{gap:0;grid-row:1 / span 2}
+  .gstr{grid-template-columns:30px 1fr 170px;padding:5px 6px;min-height:40px}
+  .gnum{width:28px;height:28px}
+  .gline svg{height:20px}
+  .gname{font-size:22px}
+  .gname small{display:inline;margin:0 0 0 8px}
+  .view[aria-label="strings"] .strings~*{grid-column:2}
+
+  /* Chords: diagram on the left, everything else in a column beside it.
+     Rows are explicit; the last row is 1fr so the tall diagram (which spans it)
+     never stretches the rows on the right. */
+  .view[aria-label="chords"]{display:grid;grid-template-columns:230px minmax(0,1fr);grid-template-rows:repeat(8,auto) 1fr;column-gap:16px;align-items:start}
+  .view[aria-label="chords"]>.panel:has(#stage){display:contents}
+  .view[aria-label="chords"]>*,.view[aria-label="chords"]>.panel>*{grid-column:2;margin:0 0 6px}
+  .view[aria-label="chords"]>.row-scroll{grid-row:1;margin:0 -16px 6px 0;padding-left:0}
+  .view[aria-label="chords"] .stage-head{grid-column:1;grid-row:1;margin:0}
+  .view[aria-label="chords"] .stage{grid-column:1;grid-row:2 / -1;padding:0}
+  .view[aria-label="chords"] .chord-svg{width:auto;height:calc(100vh - 128px - env(safe-area-inset-bottom,0px));min-height:150px;max-height:226px}
+  .view[aria-label="chords"] .chord-name{font-size:40px}
+  .view[aria-label="chords"] .icon-btn{width:44px;height:44px}
+  .view[aria-label="chords"]>.wrap{grid-row:2;flex-wrap:nowrap;overflow-x:auto;scrollbar-width:none;padding:2px 0 4px}
+  .view[aria-label="chords"]>.panel+.panel{grid-row:7}
+  .view[aria-label="chords"] .facts{grid-row:3;display:flex;flex-wrap:wrap;gap:0 6px;max-width:none}
+  .view[aria-label="chords"] .facts dd{margin-right:10px}
+  .view[aria-label="chords"] .legend{grid-row:4;justify-content:flex-start;margin-top:0}
+  .view[aria-label="chords"] .btns.center{grid-row:5;justify-content:flex-start;margin-top:0}
+  .view[aria-label="chords"] .seg-row{grid-row:6;justify-content:flex-start}
+  .view[aria-label="chords"]>.lead{grid-row:8;margin:0}
+
+  /* Scales: root and scale pickers side by side, then name and buttons, then the
+     whole neck scaled to the height that is left */
+  .view[aria-label="scales"]{display:grid;grid-template-columns:minmax(0,1fr) auto;column-gap:16px;align-items:center}
+  .view[aria-label="scales"]>.panel{display:contents}
+  .view[aria-label="scales"]>*,.view[aria-label="scales"]>.panel>*{grid-column:1 / -1;margin:0 0 4px}
+  .view[aria-label="scales"] .row-scroll{grid-row:1;grid-column:1;margin:0 0 6px;padding:2px 0 4px}
+  .view[aria-label="scales"] .row-scroll+.row-scroll{grid-column:2;max-width:46vw}
+  .view[aria-label="scales"] .panel>h3{grid-row:2;grid-column:1;margin:0}
+  .view[aria-label="scales"] .panel>.small:not(.muted){grid-column:1;font-size:14px}
+  .view[aria-label="scales"] .panel>.small:not(.muted):nth-of-type(1){grid-row:3}
+  .view[aria-label="scales"] .panel>.btns{grid-row:2 / span 2;grid-column:2;margin:0;flex-wrap:nowrap;align-items:center}
+  .view[aria-label="scales"] .fb-wrap{grid-row:4;margin:4px 0 0;padding:0}
+  .view[aria-label="scales"] .fb{height:calc(100vh - 186px - env(safe-area-inset-bottom,0px));min-height:140px;max-height:234px;width:auto;margin:0 auto}
+  .view[aria-label="scales"] .panel>.small:not(.muted):nth-of-type(2){grid-row:5}
+
+  /* Theory: explorer heading and controls on one row above the neck */
+  .view[aria-label="theory"]>.panel:not(.panel~.panel){display:grid;grid-template-columns:auto minmax(0,1fr);column-gap:16px;align-items:center}
+  .view[aria-label="theory"]>.panel:not(.panel~.panel)>*{grid-column:1 / -1}
+  .view[aria-label="theory"]>.panel:not(.panel~.panel)>h3{grid-column:1;margin:0}
+  .view[aria-label="theory"]>.panel:not(.panel~.panel)>.btns{grid-column:2;margin:0 !important;flex-wrap:nowrap}
+  .view[aria-label="theory"] .fb{height:calc(100vh - 186px - env(safe-area-inset-bottom,0px));min-height:140px;max-height:234px;width:auto;margin:0 auto}
+  .view[aria-label="theory"] .fb-wrap{margin-top:6px;padding-bottom:0}
+  .view[aria-label="theory"] .info{margin-top:6px;min-height:0}
+
+  /* Strums: pattern on the left, tempo / chord / play on the right */
+  .view[aria-label="rhythm"]>.panel:not(.panel~.panel){display:grid;grid-template-columns:minmax(0,1.3fr) minmax(0,1fr);grid-template-rows:auto auto 1fr;column-gap:20px;align-items:start}
+  .view[aria-label="rhythm"]>.panel:not(.panel~.panel)>*{grid-column:1;margin:0 0 4px}
+  .view[aria-label="rhythm"]>.panel:not(.panel~.panel)>.ctrl,.view[aria-label="rhythm"]>.panel:not(.panel~.panel)>.btns,.view[aria-label="rhythm"]>.panel:not(.panel~.panel)>.hint{grid-column:2}
+  .view[aria-label="rhythm"] .ctrl{grid-row:1}
+  .view[aria-label="rhythm"] .panel>.btns{grid-row:2}
+  .view[aria-label="rhythm"] .panel>.hint{grid-row:3;font-size:13px}
+  .view[aria-label="rhythm"] .beats{grid-row:3;margin:4px 0 0}
+
+  /* Progressions and songs: smaller chord cards next to the controls */
+  .pcard{width:84px;padding:6px 4px;border-radius:12px}
+  .pcard .chord-svg.sm{width:62px}
+  .pcard .nm{font-size:18px}
+  .strip{padding-top:2px;padding-bottom:4px}
+  .view[aria-label="progs"]>.panel:not(.panel~.panel){display:grid;grid-template-columns:minmax(0,1fr) 250px;column-gap:16px;align-items:start}
+  .view[aria-label="progs"]>.panel:not(.panel~.panel)>*{grid-column:1;margin-top:0}
+  .view[aria-label="progs"]>.panel:not(.panel~.panel)>:is(.btns,.ctrl,.hint){grid-column:2}
+  .view[aria-label="progs"]>.panel:not(.panel~.panel)>.strip+.btns{grid-row:1;margin:0}
+  .view[aria-label="progs"]>.panel:not(.panel~.panel)>.ctrl{grid-row:2;margin:4px 0 0}
+  .view[aria-label="progs"]>.panel:not(.panel~.panel)>.btns+.hint{grid-row:4}
+  .view[aria-label="progs"]>.panel:not(.panel~.panel)>.ctrl+.btns{grid-row:3}
+  .view[aria-label="progs"] .strip{grid-row:3 / span 2;margin:0 0 0 -14px;padding-left:14px}
+  .view[aria-label="progs"] .panel>h3{grid-row:1}
+  .view[aria-label="progs"] .panel>.small.muted{grid-row:2}
+  .prog-item{margin-top:6px;padding:8px 14px}
+
+  .songs-row{padding-top:2px;padding-bottom:6px}
+  .song-card{padding:8px 12px}
+  .view[aria-label="songs"]>.panel:not(.panel~.panel){display:grid;grid-template-columns:minmax(0,1fr) auto;column-gap:16px;align-items:start}
+  .view[aria-label="songs"]>.panel:not(.panel~.panel)>*{grid-column:1 / -1}
+  /* Chord cards beside the title, TV mode / Play along under them, beside the song tip */
+  .view[aria-label="songs"]>.panel:not(.panel~.panel)>:is(h3,.meta,p.small){grid-column:1}
+  .view[aria-label="songs"]>.panel:not(.panel~.panel)>.strip{grid-column:2;grid-row:1 / span 2;max-width:50vw;margin:0 -14px 0 0;padding-right:14px}
+  .view[aria-label="songs"]>.panel:not(.panel~.panel)>.strip+.btns{grid-column:2;grid-row:3;margin:0;align-self:start}
+  .song-card .lv{margin-top:3px}
+  .view[aria-label="songs"] .meta{margin:4px 0}
+  .now-line{margin-top:6px}
 }
 @media (prefers-reduced-motion: reduce){
   *,*::before,*::after{animation:none!important;transition:none!important}
@@ -948,8 +1073,8 @@ function viewChords(){
     <div class="stage" id="stage">${chordSVG(c.frets,{name:c.name,labels:S.labels})}</div>
     ${legend()}
     <dl class="facts"><dt>Notes</dt><dd>${facts.notes}</dd><dt>Formula</dt><dd>${facts.formula}</dd><dt>Frets</dt><dd>${c.frets.map(f=>f<0?'x':f).join(' ')}</dd></dl>
-    <div class="btns" style="justify-content:center"><button class="btn accent" data-act="strum" data-v="down">↓ Strum</button><button class="btn ghost" data-act="strum" data-v="up">↑ Up strum</button><button class="btn ghost" data-act="pluck">Pluck each string</button></div>
-    <div style="display:flex;justify-content:center;margin-top:12px">${seg('labels',S.labels,[['interval','Intervals'],['note','Note names'],['none','Plain']])}</div>
+    <div class="btns center"><button class="btn accent" data-act="strum" data-v="down">↓ Strum</button><button class="btn ghost" data-act="strum" data-v="up">↑ Up strum</button><button class="btn ghost" data-act="pluck">Pluck each string</button></div>
+    <div class="seg-row">${seg('labels',S.labels,[['interval','Intervals'],['note','Note names'],['none','Plain']])}</div>
   </div>`;}
   if(isB){const b=S.barre;h+=`<div class="panel"><h3>Build a barre chord</h3>
     <p class="small muted">Pick a root note, a shape and a quality. Watch the shape slide to a new fret while the fingering stays the same.</p>
