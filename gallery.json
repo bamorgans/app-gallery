@@ -37,5 +37,14 @@
       "scanner",
       "riding"
     ]
+  },
+  "multivue": {
+    "description": "Control the MultiVu TV app's Multiview from a phone, tablet or browser, or watch one of its boxes on this screen.",
+    "accent": "#1d5f3c",
+    "tags": [
+      "football",
+      "tv",
+      "remote"
+    ]
   }
 }
