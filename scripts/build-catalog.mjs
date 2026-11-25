@@ -1,4 +1,7 @@
-// Builds apps.js, the gallery's catalogue, from the folders in apps/.
+// Builds the gallery's catalogue from the folders in apps/, twice over:
+// apps.js, which the page loads with a <script> tag so the cards draw at once
+// (also when the page is opened from disk), and apps.json, the same list, which
+// the page re-fetches past the HTTP cache to pick up a newer deploy.
 //
 //   node scripts/build-catalog.mjs
 //
@@ -101,4 +104,5 @@ const out =
   "// add an app by adding apps/<name>/index.html, and adjust cards in gallery.json.\n" +
   `window.APPS = ${JSON.stringify(apps, null, 2)};\n`;
 writeFileSync(join(root, "apps.js"), out);
-console.log(`apps.js: ${apps.length} app(s): ${apps.map((a) => a.name).join(", ")}`);
+writeFileSync(join(root, "apps.json"), JSON.stringify(apps, null, 2) + "\n");
+console.log(`apps.js + apps.json: ${apps.length} app(s): ${apps.map((a) => a.name).join(", ")}`);

@@ -21,8 +21,8 @@ so a chat AI can be pointed at its public URL.
 - `index.html` is the gallery page, `scripts/build-catalog.mjs` builds its
   card list, and `protect.sh` is the encryption step the private repo's
   workflow runs.
-- Don't edit `apps.js`. It's generated on deploy by `scripts/build-catalog.mjs`
-  and git-ignored.
+- Don't edit `apps.js` or `apps.json`. They're generated on deploy by
+  `scripts/build-catalog.mjs` and git-ignored.
 - `gallery.json` is mostly written by the publish workflow (card details of
   protected apps, `version`, `added`, `updated`, `hash`). Hand edits to card
   details are fine; leave the other fields alone.

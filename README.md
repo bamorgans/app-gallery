@@ -37,8 +37,11 @@ password-protected unless tagged `<meta name="gallery-access" content="public">`
 Never add an app to `apps/` here: anything pushed to this repo stays readable
 in its history.
 
-Every folder in `apps/` becomes a card. The list (`apps.js`) is generated on
-each deploy by `scripts/build-catalog.mjs`. The card's name, description and
+Every folder in `apps/` becomes a card. The list (`apps.js`, and the same list
+as `apps.json`) is generated on each deploy by `scripts/build-catalog.mjs`.
+The gallery re-fetches `apps.json` past the browser cache when it opens, when
+the home-screen copy comes back to the front, and from its **Refresh** button,
+so a new or updated app shows up as soon as the deploy finishes. The card's name, description and
 colour come from the app's own `<title>`, `<meta name="description">` and
 `<meta name="theme-color">`, tags from
 `<meta name="gallery-tags" content="music, guitar">`, and the icon from an
