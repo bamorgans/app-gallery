@@ -4,7 +4,8 @@
       "music",
       "guitar"
     ],
-    "updated": "2026-11-24"
+    "updated": "2026-11-24",
+    "hash": "996925b2a336"
   },
   "ronans-playbook": {
     "description": "Call a play, run a route, learn the rules, then test yourself like a ref.",
@@ -13,7 +14,8 @@
       "football",
       "kids"
     ],
-    "updated": "2026-11-24"
+    "updated": "2026-11-24",
+    "hash": "44d865a6ab1e"
   },
   "sideline": {
     "description": "Fantasy football command center: leagues, rankings, news and draft help.",
@@ -22,7 +24,8 @@
       "football",
       "fantasy"
     ],
-    "updated": "2026-11-24"
+    "updated": "2026-11-24",
+    "hash": "92b1abe15202"
   },
   "daily-fit": {
     "description": "Daily workouts with rest timer, cardio, body measurements, and a food log with macro targets and barcode scanning.",
@@ -32,7 +35,8 @@
       "nutrition"
     ],
     "updated": "2026-11-24",
-    "version": "V00.01.002"
+    "version": "V00.01.002",
+    "hash": "52170b5258c3"
   },
   "ride-scan": {
     "description": "Big-button scanner for riders: voice and handlebar-remote control, plus red arrows pointing at marked spots.",
@@ -53,6 +57,7 @@
       "remote"
     ],
     "added": "2026-11-24",
-    "version": "V00.01.004"
+    "version": "V00.01.004",
+    "hash": "524200e620ce"
   }
 }
