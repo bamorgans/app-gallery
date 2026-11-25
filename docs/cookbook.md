@@ -76,6 +76,8 @@ pie showData
 | `scripts/publish.mjs` | private repo | Minifies every changed app, encrypts protected ones, builds the admin page |
 | `scripts/admin.html` | private repo | Template for the admin page |
 | `.github/workflows/publish.yml` | private repo | Runs `publish.mjs` on every push to `main`, or by hand |
+| `.published-from` | public repo | The private commit last published; the next publish takes every change since it |
+| `archive/` | private repo | Apps hidden from the admin page; the publish skips it |
 | `SPA-GUIDE.md` | public repo | The rules every app follows |
 
 [↑ Contents](#contents)
@@ -120,7 +122,8 @@ That's a fine-grained personal access token:
    access tokens → Fine-grained tokens → Generate new token**.
 2. **Token name:** `app-gallery publish`.
 3. **Expiration:** pick a date (90 days or a year). When it runs out the
-   publish fails at its first step; repeat this section to renew it.
+   publish fails when it checks out the gallery, with an authentication
+   error; repeat this section and 2.4 to renew it.
 4. **Resource owner:** your account.
 5. **Repository access:** **Only select repositories** →
    `bamorgans/app-gallery`. Only the public repo.
@@ -153,9 +156,8 @@ refuses to publish it, in case it was tagged public by mistake.
 ### 2.5 Run the first publish
 
 Private repo → **Actions → Publish to the gallery → Run workflow**. A run by
-hand rebuilds and re-encrypts every app. When it's green, the public repo's
-**Deploy gallery** run starts by itself; when that's green too, open the
-gallery.
+hand rebuilds and re-encrypts every app. Its push to the public repo starts
+the **Deploy gallery** run there; when both are green, open the gallery.
 
 ### 2.6 Optional: a local copy
 
@@ -262,7 +264,7 @@ can open it.
 | **All / New / Updates / Public** | All apps; new or updated in the last 2 weeks; updated only; no password |
 | **Category menu** | One tag, e.g. *football* |
 | **Refresh** | Fetches the latest app list. It also checks on open and when the home-screen copy comes back to the front |
-| **New badge** | Added or given a new version in the last 14 days |
+| **New badge** | Added, or given a new `APP_VERSION`, in the last 14 days (for an app without a version, any change to its source) |
 | 🔒 | Needs a password |
 | **Download** (computer, Android) | Saves the app as one HTML file that runs offline |
 | **Install** (iPhone, iPad) | Shows how to add the app to the home screen from Safari |
@@ -500,13 +502,16 @@ The essentials:
 
 | Symptom | Cause | Fix |
 |---|---|---|
-| Publish fails at "Check the token is set" | `PUBLISH_TOKEN` missing or expired | Make a new one (2.3), replace the secret |
+| Publish fails at "Check the token is set" | `PUBLISH_TOKEN` missing | Make one (2.3), add the secret (2.4) |
+| Publish fails checking out `bamorgans/app-gallery` (authentication error) | `PUBLISH_TOKEN` expired or revoked | Make a new one (2.3), replace the secret |
 | Publish run red: "needs a secret named PW_…" | Protected app without a password | Add the secret (2.4), run the workflow |
 | "tagged gallery-access public but also has a PW_ secret" | Both public tag and password | Remove one |
 | Deploy fails: "No artifacts named github-pages were found" | GitHub hadn't listed the upload yet | Re-run the failed job |
 | New app not in the gallery | Deploy still running, or an old list | Wait 1–2 min, tap **Refresh** |
 | Admin: "GitHub rejected the token" | Admin token expired or revoked | **Forget the token**, make a new one (3.2) |
 | Admin: "The token can't do this" | Missing a permission | Token needs Contents, Secrets, Actions: read and write |
+| Admin: "The new password is saved, but the publish didn't start" | Token lacks **Actions** | Run the workflow by hand; fix the token |
+| An app isn't on the admin page | Its source isn't in the private repo (RideScan lives only in the public repo) | Move its source into the private repo to manage it there |
 | iPhone keyboard won't open on the password box | Old encrypted build | Re-run the publish workflow |
 | Asked for the password again | "Remember me" expired, or the password changed | Enter the current password |
 
