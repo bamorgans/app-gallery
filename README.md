@@ -16,6 +16,10 @@ pick it up automatically through `AGENTS.md` (and `CLAUDE.md`, which imports
 it). From a phone, give a chat-based AI the raw link:
 <https://raw.githubusercontent.com/bamorgans/app-gallery/main/SPA-GUIDE.md>.
 
+The [cookbook](docs/cookbook.md) covers setup (tokens and secrets included),
+the admin page, when and how apps are encrypted, and sharing apps, with a
+cheatsheet at the end.
+
 ## Running it
 
 Online: open <https://bamorgans.github.io/app-gallery/>. Every push to `main`

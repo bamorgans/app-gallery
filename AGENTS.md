@@ -30,8 +30,8 @@ so a chat AI can be pointed at its public URL.
 ## Things never to do
 
 - Never commit secrets, API keys or personal data. The repo is public.
-- Never add or edit anything in `apps/` or `admin/`. It's build output, and
-  the next publish overwrites it. Above all, never put an app's source here,
+- Never add or edit anything in `apps/` or `admin/`, or `.published-from`.
+  They're build output, and the next publish overwrites them. Above all, never put an app's source here,
   even briefly: once pushed, it stays readable in the public history.
 
 ## Checking your work
