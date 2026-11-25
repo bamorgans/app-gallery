@@ -16,7 +16,9 @@
 //
 // gallery.json can override any of these per folder, which matters for
 // password-protected apps: their HTML is encrypted, so the only thing
-// readable is the title given to protect.sh.
+// readable is the title given to protect.sh. The private repo's publish
+// workflow writes it, adding each app's version and the dates it was added
+// and last updated, which drive the gallery's New badge.
 //
 // Runs in the Pages deploy workflow, and locally via serve.sh. No
 // dependencies, so it needs nothing beyond Node.
@@ -88,6 +90,9 @@ for (const entry of readdirSync(appsDir).sort()) {
     locked: /staticrypt/i.test(html.slice(0, 200000)) || undefined,
     ...overrides[folder],
   };
+  // The publish workflow's record of the source it last published; the
+  // gallery has no use for it.
+  delete app.hash;
   apps.push(Object.fromEntries(Object.entries(app).filter(([, v]) => v !== undefined)));
 }
 

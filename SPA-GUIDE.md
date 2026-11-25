@@ -5,7 +5,7 @@ agent: follow the **MUST** rules exactly, follow the **SHOULD** rules unless
 there's a stated reason not to, and use the code in this guide as the starting
 point rather than inventing new patterns.
 
-The rules come from three existing apps in `apps/`:
+The rules come from three existing apps in the gallery:
 
 - **Fretwork**, a guitar trainer with a user library, audio, TV mode and a service worker
 - **Ronan's Playbook**, an animated kids' football app built on SVG scenes
@@ -82,10 +82,26 @@ Without the title, iOS offers the whole `<title>`, tagline included:
 <meta name="apple-mobile-web-app-capable" content="yes">
 ```
 
-File placement:
+File placement. An app's source goes in the **private** repo
+`bamorgans/app-gallery-private`, never in the public gallery repo:
 
-- `apps/<id>.html` for a single file. This is what a phone upload produces.
-- `apps/<id>/index.html` when the app has optional extras (icons, manifest, `sw.js`).
+- `<id>.html` at the repo root for a single file, with optional icons in
+  `icons/<id>/` (`icon-180.png`, `icon-192.png`, `icon.svg`).
+- `<id>/index.html` when the app has other extras (manifest, `sw.js`); its
+  icons go in the same folder.
+
+Its publish workflow builds each app into the public repo's `apps/<id>/`. The
+build is minified, so the public repo only holds production code; write the
+source for people to read and leave size to the build. An app is
+password-protected unless its `<head>` says otherwise:
+
+```html
+<meta name="gallery-access" content="public">   <!-- no password -->
+```
+
+A protected app needs a `PW_<ID>` secret in the private repo, and files beside
+its `index.html` are published unencrypted, so keep anything private inside
+the HTML.
 
 `<id>` is lowercase-kebab (`ronans-playbook`). It is also the app's `APP_ID`
 (§3.2), which prefixes every storage key, cache name and export filename.
@@ -872,6 +888,7 @@ Before calling an app done, verify each point:
 
 - [ ] One HTML file; opens from `file://` with Wi-Fi off and core features work
 - [ ] `<title>`, `description`, `theme-color`, `gallery-tags` set (§2)
+- [ ] Source is in the private repo; `gallery-access` is `public` only if the app needs no password (§2)
 - [ ] `CONFIG` block at the top; no storage keys, URLs or timings inline elsewhere
 - [ ] `APP_VERSION` is `Vmm.nn.ddd` and was bumped for this release (§3.2.1)
 - [ ] Every storage key and cache name starts with `APP_ID`; no `localStorage.clear()`

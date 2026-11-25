@@ -1,8 +1,13 @@
 # App Gallery
 
 A launcher for my single-page apps, served by GitHub Pages at
-<https://bamorgans.github.io/app-gallery/>. Every app lives in this repo under
-`apps/<name>/`.
+<https://bamorgans.github.io/app-gallery/>.
+
+This repo is public, so it holds only the gallery and each app's production
+build in `apps/<name>/`. The apps' source lives in the private repo
+[`bamorgans/app-gallery-private`](https://github.com/bamorgans/app-gallery-private),
+whose workflow minifies every app, encrypts the password-protected ones, and
+publishes them here.
 
 Building a new app? Point your AI agent at [`SPA-GUIDE.md`](SPA-GUIDE.md): the
 rules every app here follows (single file, config block, components, data
@@ -25,39 +30,32 @@ cd /Volumes/MiniSSD/proj/app-gallery
 
 Then open <http://localhost:8000>. Ctrl-C stops it.
 
-## Adding an app
+## Adding or updating an app
 
-Every HTML file in `apps/` becomes a card: either a loose file
-(`apps/my-app.html`) or a folder (`apps/my-app/index.html`). The list
-(`apps.js`) is generated on each deploy by `scripts/build-catalog.mjs`, so
-there's nothing else to edit.
+Do it in the private repo; its README has the steps. Apps are
+password-protected unless tagged `<meta name="gallery-access" content="public">`.
+Never add an app to `apps/` here: anything pushed to this repo stays readable
+in its history.
 
-**From a phone or tablet:** on github.com open `app-gallery`, tap into the
-`apps` folder, then **Add file → Upload files**, pick the HTML file and tap
-**Commit changes**. The gallery updates a minute or two later. Give the file a
-short lowercase name first (`my-app.html`): it becomes the app's address.
-
-**From this Mac:** copy the file into `apps/`, then commit and push. Use a
-folder when the app has extra files such as icons; Fretwork does.
-
-The card's name, description and colour come from the app's own `<title>`,
-`<meta name="description">` and `<meta name="theme-color">`. Tags come from
-`<meta name="gallery-tags" content="music, guitar">`. An `icon-192.png` in the
-folder becomes the card's icon. To change a card without touching the app, add
-the folder name to `gallery.json`:
+Every folder in `apps/` becomes a card. The list (`apps.js`) is generated on
+each deploy by `scripts/build-catalog.mjs`. The card's name, description and
+colour come from the app's own `<title>`, `<meta name="description">` and
+`<meta name="theme-color">`, tags from
+`<meta name="gallery-tags" content="music, guitar">`, and the icon from an
+`icon-192.png` beside it. `gallery.json` overrides any of these per folder:
 
 ```json
 { "sideline": { "description": "…", "accent": "#b4532a", "tags": ["football"] } }
 ```
 
-## Updating an app
+## New and updated apps
 
-Replace the app's file and push. On a phone, upload a file with the same name
-into the same folder: GitHub replaces the old one. For a protected app, edit
-`private/<name>.html` and re-run `./protect.sh <name>`.
-
-Fretwork has a service worker: also bump `VERSION` in `apps/fretwork/sw.js`
-when you change it, or installed copies keep serving the old version.
+The publish workflow records in `gallery.json` the date each app was added
+and the date it was last updated, meaning a new `APP_VERSION` (or, for an app
+without one, any change to its source). For two weeks after either, the card
+shows a **New** badge. The filter buttons show all apps, only new or updated
+ones (**New**), only updated ones (**Updates**), only apps without a password
+(**Public**), or one category (the apps' tags).
 
 ## Password-protecting an app
 
@@ -94,8 +92,8 @@ cp ~/Desktop/some-app.html private/some-app.html
 
 ## Offline use and storage
 
-Each card has a Download button that saves the app as one HTML file, which
-runs from disk with no network. On an iPhone or iPad, where a downloaded HTML
+Each card has a Download button that saves the app's production build as one
+HTML file, which runs from disk with no network. On an iPhone or iPad, where a downloaded HTML
 file won't run, the button is **Install** instead: it explains adding the app
 to the home screen from Safari. A home-screen app keeps its own storage,
 separate from Safari's. Apps must therefore stay self-contained:

@@ -1,40 +1,43 @@
 # Instructions for AI agents
 
 This repo is a GitHub Pages launcher (<https://bamorgans.github.io/app-gallery/>)
-for single-page apps. The repo is **public**.
+for single-page apps. The repo is **public**, so it holds no app source: only
+the gallery itself and the production build of each app.
 
 ## Building or changing an app
 
-Read [`SPA-GUIDE.md`](SPA-GUIDE.md) first and follow it. Its MUST rules are
-requirements, not suggestions. Run through its starter checklist (§12) before
-you finish.
+Not here. Every app's source lives in the private repo
+`bamorgans/app-gallery-private`. Its publish workflow minifies each app,
+encrypts the password-protected ones, and writes the result into `apps/` here,
+along with the app's entry in `gallery.json`. If you were asked to build or
+change an app while working in this repo, stop and say it has to be done in
+the private repo.
 
-- A new app goes in `apps/<id>.html`, where `<id>` is short lowercase-kebab
-  (`chore-chart`). Use `apps/<id>/index.html` only when the app needs extra
-  files such as icons or a service worker.
-- The `<head>` must carry the gallery tags from SPA-GUIDE §2 (`<title>`,
-  description, `theme-color`, `gallery-tags`). The card is built from them.
+[`SPA-GUIDE.md`](SPA-GUIDE.md) is the build guide for those apps. It lives here
+so a chat AI can be pointed at its public URL.
+
+## Changing the gallery
+
+- `index.html` is the gallery page, `scripts/build-catalog.mjs` builds its
+  card list, and `protect.sh` is the encryption step the private repo's
+  workflow runs.
 - Don't edit `apps.js`. It's generated on deploy by `scripts/build-catalog.mjs`
-  and git-ignored. Card overrides go in `gallery.json`.
-- Every app shares one origin, so storage keys and cache names must be prefixed
-  with the app's `<id>`, and an app must never clear storage it doesn't own.
+  and git-ignored.
+- `gallery.json` is mostly written by the publish workflow (card details of
+  protected apps, `version`, `added`, `updated`, `hash`). Hand edits to card
+  details are fine; leave the other fields alone.
 
 ## Things never to do
 
 - Never commit secrets, API keys or personal data. The repo is public.
-- Never put an unencrypted copy of a password-protected app in `apps/`. Those
-  originals live in the private repo `bamorgans/app-gallery-private`, whose
-  workflow encrypts and publishes them here. Protected apps (Sideline, Daily
-  Fit, and any whose `apps/<name>/index.html` is a StatiCrypt page) and
-  `admin/` are encrypted output: don't edit them here. To change one, work in
-  the private repo.
-- Don't break apps you weren't asked to change. If you change one that has a
-  service worker (Fretwork), bump `VERSION` in its `sw.js`.
+- Never add or edit anything in `apps/` or `admin/`. It's build output, and
+  the next publish overwrites it. Above all, never put an app's source here,
+  even briefly: once pushed, it stays readable in the public history.
 
 ## Checking your work
 
 `./serve.sh` builds the catalogue and serves the gallery at
-<http://localhost:8000>. The new card should appear, launch the app, and the
+<http://localhost:8000>. Every card should appear and launch its app, and the
 Download link should produce a file that runs on its own.
 
 ## Commits and pull requests
@@ -55,5 +58,5 @@ PR descriptions are concise and use these headings:
 - **Testing**: how it was checked, and anything not yet checked.
 - **Acceptance criteria**: a checklist the reviewer can verify.
 
-Every app change bumps `APP_VERSION` (SPA-GUIDE §3.2.1); put the new version
-in the PR title.
+Changes to an app happen in the private repo, where every app change bumps
+`APP_VERSION` (SPA-GUIDE §3.2.1).
