@@ -56,6 +56,17 @@
   }
   input[type=search]:focus { outline: 2px solid var(--focus); outline-offset: 1px; }
 
+  .filters { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; margin: -8px 0 20px; }
+  .chip, .filters select {
+    min-height: 36px; padding: 6px 14px;
+    font: inherit; font-size: 14px;
+    color: var(--text); background: var(--surface);
+    border: 1px solid var(--border); border-radius: 999px; cursor: pointer;
+  }
+  .chip[aria-pressed="true"] { background: var(--text); border-color: var(--text); color: var(--bg); }
+  .chip:focus-visible, .filters select:focus-visible { outline: 2px solid var(--focus); outline-offset: 1px; }
+  .chip .n { margin-left: 4px; opacity: .65; font-variant-numeric: tabular-nums; }
+
   .grid { display: grid; gap: 16px; grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); list-style: none; margin: 0; padding: 0; }
   .card {
     position: relative;
@@ -71,6 +82,14 @@
   .card:hover { transform: translateY(-2px); }
   .card:focus-within { outline: 2px solid var(--focus); outline-offset: 2px; }
   .head { display: flex; align-items: center; gap: 12px; }
+  .icon-wrap { position: relative; flex: none; }
+  .badge {
+    position: absolute; top: -7px; right: -9px;
+    padding: 1px 6px;
+    font-size: 11px; font-weight: 700; line-height: 16px; letter-spacing: .02em;
+    color: #fff; background: #d6336c;
+    border: 2px solid var(--surface); border-radius: 999px;
+  }
   .icon {
     flex: none; width: 48px; height: 48px; border-radius: 11px;
     display: grid; place-items: center;
@@ -130,6 +149,13 @@
     </div>
     <input type="search" id="q" placeholder="Filter apps…" aria-label="Filter apps">
   </header>
+  <div class="filters" role="toolbar" aria-label="Show">
+    <button class="chip" type="button" data-show="all" aria-pressed="true">All</button>
+    <button class="chip" type="button" data-show="new" title="New apps and apps updated in the last two weeks">New</button>
+    <button class="chip" type="button" data-show="updated" title="Apps updated in the last two weeks">Updates</button>
+    <button class="chip" type="button" data-show="public" title="Apps that need no password">Public</button>
+    <select id="category" aria-label="Category"><option value="">All categories</option></select>
+  </div>
   <ul class="grid" id="grid"></ul>
   <p class="empty" id="empty" hidden>No apps match.</p>
   <footer><a href="admin/">Admin</a></footer>
@@ -157,10 +183,31 @@
     return node;
   }
 
+  // gallery.json records when the publish workflow first added an app and
+  // when it last published a new version. Either within NEW_DAYS earns the
+  // New badge; the Updates filter shows only the second kind.
+  const NEW_DAYS = 14;
+  const DAY = 864e5;
+  const recent = (iso) => {
+    if (!iso) return false;
+    const [y, m, d] = iso.split("-").map(Number);
+    return Date.now() - new Date(y, m - 1, d) < NEW_DAYS * DAY;
+  };
+  const shortDate = (iso) => new Date(iso + "T12:00").toLocaleDateString(undefined, { day: "numeric", month: "short" });
+  for (const app of apps) {
+    app.isNew = recent(app.added);
+    app.isUpdated = !app.isNew && recent(app.updated) && (!app.added || app.updated > app.added);
+  }
+
   function card(app) {
-    const icon = app.icon
+    const img = app.icon
       ? el("img", { className: "icon", src: app.icon, alt: "", loading: "lazy" })
       : el("div", { className: "icon", ariaHidden: "true" }, app.name[0]);
+    const icon = el("span", { className: "icon-wrap" }, img);
+    if (app.isNew || app.isUpdated) {
+      const what = app.isNew ? "Added " + shortDate(app.added) : "Updated " + shortDate(app.updated);
+      icon.append(el("span", { className: "badge", title: what }, "New"));
+    }
     const li = el("li", { className: "card" },
       el("div", { className: "head" }, icon,
         el("h2", {}, el("a", { href: app.url }, app.name)),
@@ -265,11 +312,39 @@
   const cards = apps.map(card);
   grid.append(...cards);
 
+  // Show filters: one of All / New / Updates / Public, combined with a
+  // category (any of the apps' tags) and the search box.
+  const SHOWS = {
+    all: () => true,
+    new: (a) => a.isNew || a.isUpdated,
+    updated: (a) => a.isUpdated,
+    public: (a) => !a.locked,
+  };
+  let show = "all";
+  const chips = [...document.querySelectorAll(".chip")];
+  for (const chip of chips) {
+    const n = apps.filter(SHOWS[chip.dataset.show]).length;
+    if (chip.dataset.show !== "all") chip.append(el("span", { className: "n" }, String(n)));
+    chip.addEventListener("click", () => {
+      show = chip.dataset.show;
+      for (const c of chips) c.setAttribute("aria-pressed", String(c === chip));
+      filter();
+    });
+  }
+  const category = document.getElementById("category");
+  const tags = [...new Set(apps.flatMap((a) => a.tags || []))].sort((a, b) => a.localeCompare(b));
+  category.append(...tags.map((t) => el("option", { value: t }, t[0].toUpperCase() + t.slice(1))));
+  category.hidden = tags.length === 0;
+  category.addEventListener("change", filter);
+
   function filter() {
     const term = q.value.trim().toLowerCase();
+    const tag = category.value;
     let shown = 0;
-    for (const c of cards) {
-      const match = !term || c.dataset.search.includes(term);
+    for (const [i, c] of cards.entries()) {
+      const app = apps[i];
+      const match = SHOWS[show](app) && (!tag || (app.tags || []).includes(tag))
+        && (!term || c.dataset.search.includes(term));
       c.hidden = !match;
       if (match) shown++;
     }

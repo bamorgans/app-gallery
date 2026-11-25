@@ -3,7 +3,8 @@
     "tags": [
       "music",
       "guitar"
-    ]
+    ],
+    "updated": "2026-11-24"
   },
   "ronans-playbook": {
     "description": "Call a play, run a route, learn the rules, then test yourself like a ref.",
@@ -11,7 +12,8 @@
     "tags": [
       "football",
       "kids"
-    ]
+    ],
+    "updated": "2026-11-24"
   },
   "sideline": {
     "description": "Fantasy football command center: leagues, rankings, news and draft help.",
@@ -19,7 +21,8 @@
     "tags": [
       "football",
       "fantasy"
-    ]
+    ],
+    "updated": "2026-11-24"
   },
   "daily-fit": {
     "description": "Daily workouts with rest timer, cardio, body measurements, and a food log with macro targets and barcode scanning.",
@@ -27,7 +30,9 @@
     "tags": [
       "fitness",
       "nutrition"
-    ]
+    ],
+    "updated": "2026-11-24",
+    "version": "V00.01.002"
   },
   "ride-scan": {
     "description": "Big-button scanner for riders: voice and handlebar-remote control, plus red arrows pointing at marked spots.",
@@ -36,7 +41,8 @@
       "radio",
       "scanner",
       "riding"
-    ]
+    ],
+    "added": "2026-11-24"
   },
   "multivue": {
     "description": "Control the MultiVu TV app's Multiview from a phone, tablet or browser, or watch one of its boxes on this screen.",
@@ -45,6 +51,8 @@
       "football",
       "tv",
       "remote"
-    ]
+    ],
+    "added": "2026-11-24",
+    "version": "V00.01.004"
   }
 }
