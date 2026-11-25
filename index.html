@@ -35,6 +35,9 @@
     }
   }
   * { box-sizing: border-box; }
+  /* The filters hide cards with the hidden attribute; .card's display: flex
+     would otherwise override it and leave every card showing. */
+  [hidden] { display: none !important; }
   body {
     margin: 0;
     background: var(--bg);
