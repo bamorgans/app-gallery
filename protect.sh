@@ -82,4 +82,24 @@ perl -pi -e "s/rememberExpirationKey: \"staticrypt_expiration\"/rememberExpirati
 grep -q "\"$name:staticrypt_passphrase\"" "$out/index.html" || { echo "Couldn't set the Remember-me key; StatiCrypt's template may have changed." >&2; exit 1; }
 
 add_home_tags "$out/index.html"
+
+# The password box must not take focus by itself. iOS ignores focus that
+# doesn't come from a tap, and in a home-screen app a box focused that way
+# then won't raise the keyboard when tapped either, so the password can't be
+# typed at all. Drop the autofocus attribute, and keep the on-load focus()
+# for mouse-and-keyboard devices only, where it saves a click.
+perl -0pi -e 's/\n\s*autofocus\b//; s/(document\.getElementById\("staticrypt-password"\)\.focus\(\);)/if (!matchMedia("(pointer: coarse)").matches) $1/' "$out/index.html"
+grep -q '<input[^>]*autofocus' "$out/index.html" && { echo "Couldn't remove autofocus; StatiCrypt's template may have changed." >&2; exit 1; }
+grep -q 'matches) document.getElementById("staticrypt-password").focus();' "$out/index.html" || { echo "Couldn't guard the on-load focus; StatiCrypt's template may have changed." >&2; exit 1; }
+
+# The template's card is a fixed 360px wide with 45px padding, which crowds a
+# phone and leaves no margin. Let it shrink, and let the page scroll so iOS
+# can move the box above the keyboard.
+mobile_css='<style>
+.staticrypt-page{width:auto;max-width:360px;padding:max(24px,6vh) 16px 0}
+.staticrypt-form{padding:32px 24px;margin-bottom:40vh}
+.staticrypt-content,.staticrypt-body,.staticrypt-html{height:auto;min-height:100%}
+</style>'
+MOBILE_CSS="$mobile_css" perl -0pi -e 's{</head>}{$ENV{MOBILE_CSS}\n</head>}i' "$out/index.html"
+
 echo "Encrypted → $out/index.html"
