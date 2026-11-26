@@ -49,7 +49,7 @@
     "added": "2026-11-24"
   },
   "multivue": {
-    "description": "Control the MultiVu TV app's Multiview from a phone, tablet or browser, or watch one of its boxes on this screen.",
+    "description": "Control the MultiVue TV app's Multiview from a phone, tablet or browser, or watch one of its boxes on this screen.",
     "accent": "#1d5f3c",
     "tags": [
       "football",
@@ -58,7 +58,7 @@
     ],
     "added": "2026-11-24",
     "version": "V00.01.005",
-    "hash": "2de8485638ae",
+    "hash": "c4b540f2a091",
     "updated": "2026-11-25"
   }
 }
