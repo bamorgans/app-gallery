@@ -49,16 +49,16 @@
     "added": "2026-11-24"
   },
   "multivue": {
-    "description": "Control the MultiVue TV app's Multiview from a phone, tablet or browser, or watch one of its boxes on this screen.",
-    "accent": "#1d5f3c",
+    "description": "Watch up to four videos, pictures and web pages at once in your browser, or control the MultiVue TV app's Multiview from a phone, tablet or browser.",
+    "accent": "#0B0F17",
     "tags": [
       "football",
       "tv",
       "remote"
     ],
     "added": "2026-11-24",
-    "version": "V00.01.006",
-    "hash": "ffaccea530c5",
+    "version": "V00.01.016",
+    "hash": "cf1eb798ce25",
     "updated": "2026-11-26"
   }
 }
