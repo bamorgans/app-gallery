@@ -49,16 +49,17 @@
     "added": "2026-11-24"
   },
   "multivue": {
-    "description": "Watch up to four videos, pictures and web pages at once in your browser, or control the MultiVue TV app's Multiview from a phone, tablet or browser.",
+    "description": "Watch up to four videos, pictures and web pages at once in your browser, follow the NFL with Gridiron, or control the MultiVue TV app from a phone, tablet or browser.",
     "accent": "#0B0F17",
     "tags": [
       "football",
       "tv",
-      "remote"
+      "remote",
+      "multiview"
     ],
     "added": "2026-11-24",
-    "version": "V00.01.019",
-    "hash": "a1c3744cc04c",
+    "version": "V00.01.020",
+    "hash": "3c446091c849",
     "updated": "2026-11-26"
   }
 }
