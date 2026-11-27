@@ -121,6 +121,7 @@
   .card h2 a:focus { outline: none; }
   .lock { margin-left: auto; font-size: 14px; }
   .desc { margin: 0; color: var(--muted); font-size: 14px; flex: 1; }
+  .meta { margin: 0; color: var(--muted); font-size: 12px; font-variant-numeric: tabular-nums; }
   .foot { display: flex; align-items: center; justify-content: space-between; gap: 8px; }
   .tags { display: flex; flex-wrap: wrap; gap: 6px; }
   .tag { font-size: 12px; padding: 2px 8px; border-radius: 999px; border: 1px solid var(--border); color: var(--muted); }
@@ -217,6 +218,9 @@
     const [y, m, d] = iso.split("-").map(Number);
     return Date.now() - new Date(y, m - 1, d) < NEW_DAYS * DAY;
   };
+  // With the year once it isn't this year's.
+  const longDate = (iso) => new Date(iso + "T12:00").toLocaleDateString(undefined,
+    { day: "numeric", month: "short", ...(iso.slice(0, 4) === String(new Date().getFullYear()) ? {} : { year: "numeric" }) });
   const shortDate = (iso) => new Date(iso + "T12:00").toLocaleDateString(undefined, { day: "numeric", month: "short" });
 
   // The catalogue as the page holds it: sorted, with the New/Updates flags
@@ -229,6 +233,15 @@
       const isNew = recent(a.added);
       return { ...a, isNew, isUpdated: !isNew && recent(a.updated) && (!a.added || a.updated > a.added) };
     });
+  }
+
+  // The card's version and last-update line, from what the publish workflow
+  // recorded in gallery.json: "V00.01.025 · Updated 27 Nov". An app with no
+  // version shows only the date; one never updated, the date it was added.
+  function meta(app) {
+    const when = app.updated ? "Updated " + longDate(app.updated) : app.added ? "Added " + longDate(app.added) : "";
+    const text = [app.version, when].filter(Boolean).join(" · ");
+    return text ? el("p", { className: "meta" }, text) : "";
   }
 
   function card(app) {
@@ -245,6 +258,7 @@
         el("h2", {}, el("a", { href: app.url }, app.name)),
         app.locked ? el("span", { className: "lock", title: "Password protected" }, "🔒") : ""),
       el("p", { className: "desc" }, app.description || ""),
+      meta(app),
       el("div", { className: "foot" },
         el("div", { className: "tags" }, ...(app.tags || []).map(t => el("span", { className: "tag" }, t))),
         el("div", { className: "links" },
