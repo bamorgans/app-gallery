@@ -35,7 +35,10 @@ rm -f "$out/index.html"
 
 # The password page's <title> is the only readable text in the encrypted file,
 # and the gallery takes the card name from it, so reuse the app's own title.
-title="$(grep -o -i -m1 '<title[^>]*>[^<]*' "$src" | sed 's/<[^>]*>//' || true)"
+# Only the first match: a minified app is one line, and grep -o prints every
+# match on the line, including "<title>" inside the app's own scripts (feed
+# parsers), which then showed up in the password page's heading.
+title="$(grep -o -i -m1 '<title[^>]*>[^<]*' "$src" | head -n1 | sed 's/<[^>]*>//' || true)"
 title="${title:-$name}"
 # The part before the tagline, as the gallery card does it ("Sideline").
 short="$(printf '%s' "$title" | perl -pe 's/\s*(?::|—|–|\s-\s|\|).*//; s/"/&quot;/g')"
@@ -101,5 +104,17 @@ mobile_css='<style>
 .staticrypt-content,.staticrypt-body,.staticrypt-html{height:auto;min-height:100%}
 </style>'
 MOBILE_CSS="$mobile_css" perl -0pi -e 's{</head>}{$ENV{MOBILE_CSS}\n</head>}i' "$out/index.html"
+
+# A Cancel button under Decrypt, for someone who opened the app by mistake
+# or doesn't have the password: back to where they came from (the gallery),
+# or to the gallery itself when the page was opened directly.
+cancel='<button type="button" class="staticrypt-cancel-button" onclick="history.length > 1 ? history.back() : location.assign(&#39;../../&#39;)">Cancel</button>'
+cancel_css='<style>
+.staticrypt-cancel-button{margin-top:10px;width:100%;padding:13px;background:transparent;color:#2b6cb0;border:2px solid #2b6cb0;font-size:14px;text-transform:uppercase;cursor:pointer}
+.staticrypt-cancel-button:hover,.staticrypt-cancel-button:focus{background:#2b6cb0;color:#fff;outline:0}
+</style>'
+CANCEL="$cancel" perl -0pi -e 's{(<input type="submit" class="staticrypt-decrypt-button"[^>]*>)}{$1\n$ENV{CANCEL}}' "$out/index.html"
+grep -q 'class="staticrypt-cancel-button"' "$out/index.html" || { echo "Couldn't add the Cancel button; StatiCrypt's template may have changed." >&2; exit 1; }
+CANCEL_CSS="$cancel_css" perl -0pi -e 's{</head>}{$ENV{CANCEL_CSS}\n</head>}i' "$out/index.html"
 
 echo "Encrypted → $out/index.html"
