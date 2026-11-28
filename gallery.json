@@ -61,5 +61,10 @@
     "version": "V00.01.026",
     "hash": "8d87cd1ea20e",
     "updated": "2026-11-27"
+  },
+  "builds": {
+    "added": "2026-11-28",
+    "version": "V00.01.001",
+    "hash": "227eb5fedb81"
   }
 }
